@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENiAC Staking Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a, #1e293b); color: #f1f5f9; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 30px; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo i { font-size: 2.5rem; color: #3b82f6; }
+        .logo h1 { font-size: 2rem; background: linear-gradient(to right, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .wallet-section { display: flex; align-items: center; gap: 15px; }
+        .wallet-info { background: rgba(30, 41, 59, 0.7); padding: 10px 20px; border-radius: 12px; border: 1px solid #475569; }
+        .connect-btn { background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        .card { background: rgba(30, 41, 59, 0.7); border-radius: 20px; padding: 25px; border: 1px solid #475569; margin-bottom: 30px; }
+        .main-content { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 768px) { .main-content { grid-template-columns: 1fr 1fr; } }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .info-item { background: rgba(15, 23, 42, 0.5); padding: 15px; border-radius: 12px; border-left: 4px solid #3b82f6; }
+        .input-group { margin: 20px 0; }
+        .input-wrapper { display: flex; border: 1px solid #475569; border-radius: 12px; overflow: hidden; }
+        .input-wrapper input { flex: 1; padding: 15px; background: transparent; border: none; color: white; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: linear-gradient(to right, #10b981, #059669); color: white; }
+        .btn-claim { background: linear-gradient(to right, #f59e0b, #d97706); color: white; grid-column: span 2; }
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #334155; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-server"></i>
+                <h1>ENiAC Staking</h1>
+            </div>
+            <div class="wallet-section">
+                <div class="wallet-info">
+                    <div>Account: <span id="wallet">Not Connected</span></div>
+                </div>
+                <button class="connect-btn" id="connectBtn">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2><i class="fas fa-coins"></i> Stake ENiAC</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div>ENiAC Balance</div>
+                        <div id="balance">0</div>
+                    </div>
+                    <div class="info-item">
+                        <div>Staked Amount</div>
+                        <div id="staked">0</div>
+                    </div>
+                    <div class="info-item">
+                        <div>APY</div>
+                        <div id="apy">28.5%</div>
+                    </div>
+                    <div class="info-item">
+                        <div>Pending Rewards</div>
+                        <div id="rewards">0</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div>Amount to Stake</div>
+                    <div class="input-wrapper">
+                        <input type="number" id="amount" placeholder="0.0">
+                        <button style="background:#3b82f6;color:white;border:none;padding:0 20px;">MAX</button>
+                    </div>
+                </div>
+                
+                <div class="btn-grid">
+                    <button class="btn btn-primary" id="approveBtn">Approve</button>
+                    <button class="btn btn-primary" id="stakeBtn">Stake</button>
+                    <button class="btn" id="unstakeBtn" style="background:#ef4444;color:white;">Unstake</button>
+                    <button class="btn-claim" id="claimBtn">Claim Rewards</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-tractor"></i> Farming Pools</h2>
+                <div id="pools">
+                    <div style="padding:20px;text-align:center;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading pools...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>ENiAC Staking Platform - Ethereum Mainnet</p>
+            <div style="margin-top:15px;">
+                <a href="https://etherscan.io/address/0xafF339de48848d0F8B5704909Ac94e8E8D7E3415" target="_blank" style="color:#60a5fa;margin:0 10px;">Token Contract</a>
+                <a href="https://etherscan.io/address/0x564DF71B75855d63c86a267206Cd0c9e35c92789" target="_blank" style="color:#60a5fa;margin:0 10px;">MasterChef</a>
+                <a href="https://etherscan.io/address/0x1d30e4a1357C6e9ee2a983348aFDb558A1BD2976" target="_blank" style="color:#60a5fa;margin:0 10px;">Vault</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple JavaScript for testing -->
+    <script>
+        console.log('ENiAC Staking DApp loaded');
+        
+        document.getElementById('connectBtn').onclick = function() {
+            if (typeof window.ethereum !== 'undefined') {
+                document.getElementById('wallet').textContent = '0x1234...5678';
+                document.getElementById('connectBtn').innerHTML = '<i class="fas fa-check"></i> Connected';
+                document.getElementById('connectBtn').style.background = 'linear-gradient(to right, #10b981, #059669)';
+                
+                // Update mock data
+                document.getElementById('balance').textContent = '1,250.50';
+                document.getElementById('staked').textContent = '500.00';
+                document.getElementById('rewards').textContent = '25.75';
+                
+                // Load pools
+                document.getElementById('pools').innerHTML = `
+                    <div style="background:rgba(15,23,42,0.5);padding:15px;border-radius:12px;margin:10px 0;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <div><i class="fas fa-water"></i> ENiAC-ETH LP</div>
+                            <div style="color:#4ade80;">APY: 45.7%</div>
+                        </div>
+                        <div style="margin-top:10px;font-size:0.9em;">
+                            <div>Your Stake: 0 LP</div>
+                            <div>Rewards: 0 ENiAC</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.5);padding:15px;border-radius:12px;margin:10px 0;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <div><i class="fas fa-gem"></i> ENiAC Single</div>
+                            <div style="color:#4ade80;">APY: 28.3%</div>
+                        </div>
+                        <div style="margin-top:10px;font-size:0.9em;">
+                            <div>Your Stake: 500 ENiAC</div>
+                            <div>Rewards: 25.75 ENiAC</div>
+                        </div>
+                    </div>
+                `;
+                
+                alert('Wallet connected successfully! (Demo Mode)');
+            } else {
+                alert('Please install MetaMask!');
+            }
+        };
+        
+        // Button actions
+        document.getElementById('approveBtn').onclick = () => alert('Approval transaction sent!');
+        document.getElementById('stakeBtn').onclick = () => alert('Stake transaction sent!');
+        document.getElementById('unstakeBtn').onclick = () => alert('Unstake transaction sent!');
+        document.getElementById('claimBtn').onclick = () => alert('Rewards claimed!');
+        
+        // Set max amount
+        document.querySelector('.input-wrapper button').onclick = function() {
+            document.getElementById('amount').value = '1250.50';
+        };
+    </script>
+</body>
+</html>
